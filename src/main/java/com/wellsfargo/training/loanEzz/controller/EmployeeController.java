@@ -1,10 +1,14 @@
 package com.wellsfargo.training.loanEzz.controller;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -17,6 +21,7 @@ import com.wellsfargo.training.loanEzz.exception.ResourceNotFoundException;
 import com.wellsfargo.training.loanEzz.model.Employee;
 import com.wellsfargo.training.loanEzz.service.EmployeeService;
 
+@CrossOrigin(origins = "http://localhost:3000")
 @RestController
 @RequestMapping(value = "/api")
 public class EmployeeController {
@@ -51,7 +56,7 @@ public class EmployeeController {
 	}
 	
 	@PostMapping("/login")
-	private Boolean loginEmployee(@RequestBody @Validated Employee employee) throws ResourceNotFoundException {
+	private ResponseEntity<Employee> loginEmployee(@RequestBody @Validated Employee employee) throws ResourceNotFoundException {
 		
 		Boolean a = false;
         
@@ -59,18 +64,41 @@ public class EmployeeController {
 		String password = employee.getPassword();
 				
 		Employee e = empservice.loginEmployee(email).orElseThrow(() -> new ResourceNotFoundException("Employee not found"));
-//		Base64.Decoder decoder = Base64.getDecoder();
-//		String actualPassword = decoder.decode(e.getPassword()).toString();
-//		System.out.println(actualPassword);
-//		System.out.println(password);
 		if(email.equals(e.getEmail()) && password.equals(e.getPassword())) {
 			a= true;
+			return ResponseEntity.ok(e);
 		}
-		return a;
+		return ResponseEntity.ofNullable(null);
 	}
+	
+	@GetMapping("/employee/{id}")
+	public ResponseEntity<Employee> getEmployee(@PathVariable(value = "id") Long eId)
+												throws ResourceNotFoundException{
+		Employee employee = empservice.findEmployeeById(eId).orElseThrow(() -> new ResourceNotFoundException("Employee Not Found"));
+		
+		return ResponseEntity.ok().body(employee);
+		
+	}
+	
 	
 	@GetMapping("/employees")
 	public List<Employee> getEmployees() {
 		return empservice.findAllEmployees();
+	}
+	
+	@DeleteMapping("/employee/{id}")
+	public Map<String, Boolean> deleteEmployee(@PathVariable(value = "id") Long eId)
+											throws ResourceNotFoundException {
+		Employee employee = empservice.findEmployeeById(eId).orElseThrow(() -> new ResourceNotFoundException("Employee Not Found"));
+		
+		empservice.deleteEmployee(eId);
+		
+		Map<String, Boolean> response = new HashMap<>();
+        
+        
+        response.put("Deleted", Boolean.TRUE);
+        
+        
+        return response;
 	}
 }

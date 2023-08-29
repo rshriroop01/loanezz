@@ -1,5 +1,6 @@
 package com.wellsfargo.training.loanEzz.controller;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -9,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -24,9 +26,9 @@ import com.wellsfargo.training.loanEzz.model.Item;
 import com.wellsfargo.training.loanEzz.service.ItemService;
 
 // @RequestMapping - maps HTTP request with a path to a controller 
+@CrossOrigin(origins = "http://localhost:3000")
 @RestController
 @RequestMapping(value = "/api")
-
 public class ItemController {
 	
 	@Autowired
@@ -40,15 +42,26 @@ public class ItemController {
     //Select body -> raw -> JSON 
     //Insert JSON product object.
     @PostMapping("/products")
-    public Item saveProduct(@Validated @RequestBody Item p) {
-        
-        return pservice.saveProduct(p);
-
+    public ResponseEntity<Item> saveProduct(@Validated @RequestBody Item p) {
+        List<Item> il = pservice.findSimilarProduct(p);
+        if(il.size() > 0) {
+        	return ResponseEntity.ofNullable(null);
+        }
+        Item i = pservice.saveProduct(p);
+        return ResponseEntity.ok(i);
     }
     
     @GetMapping("/products")
     public List<Item> listAll() {
-        return pservice.listAll();
+    	List<Item> items = new ArrayList<Item>();
+    	List<Item> allItems = pservice.listAll();
+    	for(int i = 0; i < allItems.size(); i++) {
+    		char status = allItems.get(i).getItemStatus();
+    		if(status == 'Y') {
+    			items.add(allItems.get(i));
+    		}
+    	}
+        return items;
     }
     
     @GetMapping("/purchased-items/{eid}")
@@ -79,7 +92,7 @@ public class ItemController {
         product.setItemMake(p.getItemMake());
         product.setItemStatus(p.getItemStatus());
         product.setItemCategory(p.getItemCategory());
-        
+        product.setItemValue(p.getItemValue());
         
 
         return ResponseEntity.ok().body(pservice.saveProduct(product));

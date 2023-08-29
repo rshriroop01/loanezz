@@ -1,7 +1,7 @@
 package com.wellsfargo.training.loanEzz.model;
 
 import java.nio.charset.StandardCharsets;
-import java.sql.Date;
+import java.util.Date;
 import java.util.Base64;
 import java.util.List;
 

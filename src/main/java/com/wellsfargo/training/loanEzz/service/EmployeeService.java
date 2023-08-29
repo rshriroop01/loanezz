@@ -31,6 +31,10 @@ public class EmployeeService {
 		return emprepo.findAll();
 	}
 	
+	public void deleteEmployee(long employeeId) {
+		emprepo.deleteById(employeeId + "");
+	}
+	
 	public Optional<Employee> loginEmployee(String email) {
 //		Base64.Encoder encoder = Base64.getEncoder();
 //		String email = employee.getEmail();
