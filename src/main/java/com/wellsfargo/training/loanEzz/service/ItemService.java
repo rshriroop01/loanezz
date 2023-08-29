@@ -38,6 +38,20 @@ public class ItemService {
 	        return prepo.findById(id);
 	    }
 	    
+	    public List<Item> findSimilarProduct(Item i) {
+	    	return prepo.findSimilarItem(i.getItemCategory(), i.getItemMake(), i.getItemDescription());
+	    }
+	    
+	    public void updateProductAvailability(long id) {
+	    	Optional<Item> i = prepo.findById(id);
+	    	if(i.isEmpty()) {
+	    		return;
+	    	}
+	    	Item item = i.get();
+	    	item.setItemStatus('N');
+	    	prepo.save(item);
+	    }
+	    
 	    public void deleteProduct(long id) {
 	        prepo.deleteById(id);
 	    }

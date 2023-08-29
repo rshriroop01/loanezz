@@ -7,6 +7,11 @@ public class InputLoan {
 	private String itemMake;
 	private String itemDescription;
 	private int itemValue;
+	
+	public InputLoan() {
+		
+	}
+	
 	public InputLoan(Long itemId, Long employeeId, String itemCategory, String itemMake, String itemDescription, int itemValue) {
 		this.employeeId = employeeId;
 		this.itemId = itemId;

@@ -32,4 +32,7 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
 	@Query("SELECT i FROM Item i WHERE i.pid IN (SELECT ei.item.pid FROM EmployeeIssueDetails ei WHERE ei.employee.employeeId = :eid)")
 //	@Query("SELECT * FROM Item i WHERE i.pid IN (SELECT item_id FROM employee_issue_details WHERE employee_id = :eid)")
 	public List<Item> findAllItemsForEmployee(@Param("eid") Long eId);
+
+	@Query("SELECT i FROM Item i WHERE i.itemCategory = :itemCategory AND i.itemDescription = :itemDescription AND i.itemMake = :itemMake")
+	public List<Item> findSimilarItem(@Param("itemCategory") String itemCategory, @Param("itemMake") String itemMake, @Param("itemDescription") String itemDescription);
 }

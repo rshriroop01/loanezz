@@ -40,4 +40,7 @@ public class LoanCardService {
 	public void deleteLoanCard(LoanCard lc) {
 		lrepo.delete(lc);
 	}
+	public List<LoanCard> listAll() {
+	        return lrepo.findAll();
+	}
 }
